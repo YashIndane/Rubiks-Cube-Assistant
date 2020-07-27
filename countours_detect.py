@@ -5,7 +5,7 @@ import math
 
 cap = cv2.VideoCapture(0)
 
-def check_if_square(P1 , P2) : 
+def check_if_square(P1 , P2) -> bool : 
    
    d1 = math.dist(P1[0] , P2[1])
    d2 = math.dist(P1[1] , P2[0])
@@ -13,6 +13,7 @@ def check_if_square(P1 , P2) :
    return abs(d1 - d2)  < 2
 
 
+tile_coordinates = []
 while True : 
     success, img_org = cap.read()
 
@@ -21,7 +22,7 @@ while True :
     canny = cv2.Canny(blurred, 20, 40)
 
     kernel = np.ones((3,3), np.uint8)
-    dilated = cv2.dilate(canny, kernel, iterations=2)
+    dilated = cv2.dilate(canny, kernel, iterations = 1)
 
     (contours, hierarchy) = cv2.findContours(dilated.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
@@ -29,11 +30,16 @@ while True :
 
 
 
-   
+    tile_counter = 0
+    countours_counter = 0
     font = cv2.FONT_HERSHEY_COMPLEX 
+
+
     for cnt in contours : 
+
          area = cv2.contourArea(cnt) 
          coordinates = []
+         
     
             # Capturing grid squares by area 
          if area < 3000 and area > 1000 :  
@@ -41,8 +47,7 @@ while True :
     
                 # Only grabbing 4 sided polygons
                 if(len(approx) == 4):  
-                      #cv2.drawContours(img_org, [approx], 0, (0, 0, 255), 2) 
-
+                     
                       n = approx.ravel()  
                       i = 0
                       
@@ -61,11 +66,22 @@ while True :
                       P1 = sorted(P1 , key = lambda z : z[1])
                       P2 = sorted(P2 , key = lambda q : q[1])
 
-                      if check_if_square(P1 , P2) : cv2.drawContours(img_org, [approx], 0, (20, 255 , 57), 2) 
+                      if check_if_square(P1 , P2) : 
 
-  
-                          
+                        cv2.drawContours(img_org, [approx], 0, (20, 255 , 57), 2)
 
+                        if all([abs(P1[0][0] - x) > 50 or abs(P1[0][1] - y) > 50 for x , y in tile_coordinates]) : 
+
+                              tile_coordinates.append(P1[0])
+
+                              if len(tile_coordinates) == 9 : 
+
+                                 print(tile_coordinates)
+                                 tile_coordinates = []
+
+                                  
+                              
+                        
 
     cv2.imshow('Screen' , img_org)
 
