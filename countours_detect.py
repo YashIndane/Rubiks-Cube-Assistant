@@ -1,9 +1,19 @@
 import cv2
 import numpy as np
 import math
+import joblib
+import time
+
 
 
 cap = cv2.VideoCapture(0)
+
+colours = ['orange' , 'red' , 'green' , 'blue' , 'yellow' , 'white']
+
+s_scalar = joblib.load('Scalar1')
+model = joblib.load('model_0.04')
+
+colours_array = ['0' , '0' , '0' , '0' , '0' , '0' , '0' , '0' , '0']
 
 def check_if_square(P1 , P2) -> bool : 
    
@@ -13,7 +23,10 @@ def check_if_square(P1 , P2) -> bool :
    return abs(d1 - d2)  < 2
 
 
-def sort_array(TA) -> list : 
+def sort_array(TA) : 
+
+   global colours_array
+
    TA = sorted(TA ,  key = lambda x : x[1])
 
    Z1 = TA[0 : 3]
@@ -28,11 +41,47 @@ def sort_array(TA) -> list :
    i = 0
    print(Z1 + Z2 + Z3)
 
-   
+   temp_array = []
    for x , y in  Z1 + Z2 + Z3  : 
+
       img = img_org[y + 10 : y + 35 , x + 10 : x + 35]
       cv2.imwrite(str(i) + '.png' , img)
+      
+      arr = []
+      for p in img[12][12] : arr.append(p)
+
+      n_array = np.array([arr])
+      arr = s_scalar.transform([arr])
+
+      value = model.predict(arr)
+
+      index = value[0] - 1
+
+      temp_array.append(colours[index])
+
       i += 1
+
+   sub_array = colours_array[len(colours_array) - 9 : ]  
+
+   not_same = 0
+   for h in range(9) : 
+       if sub_array[h] != temp_array[h] : not_same += 1
+
+   if not_same >= 4 : 
+       colours_array += temp_array
+       #time.sleep(0.4)
+      
+
+   if len(colours_array) ==  45 : 
+       print(colours_array[9 : ])   
+
+
+
+
+      
+
+
+     
 
   
 
@@ -68,6 +117,8 @@ while True :
     
     font = cv2.FONT_HERSHEY_COMPLEX 
     
+    
+    
 
 
     for cnt in contours : 
@@ -78,6 +129,7 @@ while True :
     
             # Capturing grid squares by area 
          if area < 3500 and area > 1500 :  
+               
                 approx = cv2.approxPolyDP(cnt,   0.03 * cv2.arcLength(cnt, True), True) 
                 coordinates = []
     
@@ -96,6 +148,9 @@ while True :
                         i += 1   
 
                       coordinates = sorted(coordinates , key = lambda x : x[0])
+
+                     
+
                       P1 = coordinates[:2]
                       P2 = coordinates[2:]
 
@@ -118,8 +173,23 @@ while True :
                               if len(tile_coordinates) == 9 : 
 
                                  print(tile_coordinates)
+                                 
+                                 #tile_coordinates = []
+
+                                 #if cv2.waitKey(1) & 0xFF == ord('a') :
                                  sort_array(tile_coordinates)
                                  tile_coordinates = []
+
+                                 
+                               
+                                 
+                                 
+                                 
+
+        
+                                     
+
+
                                  
                                   
                               
@@ -129,5 +199,11 @@ while True :
 
 
 
-    if cv2.waitKey(1) & 0xFF == ord('q'):
+    if cv2.waitKey(1) & 0xFF == ord('q') :
             break
+    
+   
+
+
+
+                
