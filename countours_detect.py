@@ -72,7 +72,7 @@ def sort_array(TA) :
        #time.sleep(0.4)
       
 
-   if len(colours_array) ==  45 : 
+   if len(colours_array) ==  63 : 
        print(colours_array[9 : ])   
 
 
@@ -95,7 +95,7 @@ def sort_array(TA) :
 
 
 tile_coordinates = []
-
+face_counter = 0
 
 while True : 
     success, img_org = cap.read()
@@ -177,8 +177,16 @@ while True :
                                  #tile_coordinates = []
 
                                  #if cv2.waitKey(1) & 0xFF == ord('a') :
-                                 sort_array(tile_coordinates)
+
+                                 face_counter += 1
+                                
+
+
+                                 if face_counter % 15 == 0 : 
+                                      sort_array(tile_coordinates)
+
                                  tile_coordinates = []
+                                 
 
                                  
                                
