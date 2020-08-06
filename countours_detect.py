@@ -3,6 +3,7 @@ import numpy as np
 import math
 import joblib
 import time
+import solution_generator
 
 
 
@@ -14,6 +15,7 @@ s_scalar = joblib.load('Scalar1')
 model = joblib.load('model_0.04')
 
 colours_array = ['0' , '0' , '0' , '0' , '0' , '0' , '0' , '0' , '0']
+colour_pallet = [(0,165,255) , (0,0,255) , (0,255,0) , (255,0,0) , (0,255,255) , (255,255,255)]
 
 def check_if_square(P1 , P2) -> bool : 
    
@@ -40,9 +42,12 @@ def sort_array(TA) :
 
    i = 0
    print(Z1 + Z2 + Z3)
-
+   
+   _x_ , _y_ = (30 , 30)
    temp_array = []
-   for x , y in  Z1 + Z2 + Z3  : 
+   w = 0
+   
+   for  x , y in Z1 + Z2 + Z3 : 
 
       img = img_org[y + 10 : y + 35 , x + 10 : x + 35]
       cv2.imwrite(str(i) + '.png' , img)
@@ -58,7 +63,19 @@ def sort_array(TA) :
       index = value[0] - 1
 
       temp_array.append(colours[index])
+      
+      if w not in [3 , 6] : 
+        cv2.rectangle(img_org , (_x_ , _y_) , (_x_ + 13 , _y_ + 13) , colour_pallet[index] , -1)
+        _x_ += 13
+      else : 
+          _y_ += 13
+          _x_ = 30
+          cv2.rectangle(img_org , (_x_ , _y_) , (_x_ + 13 , _y_ + 13) , colour_pallet[index] , -1)
+          _x_ += 13
 
+
+      
+      w += 1
       i += 1
 
    sub_array = colours_array[len(colours_array) - 9 : ]  
@@ -73,7 +90,11 @@ def sort_array(TA) :
       
 
    if len(colours_array) ==  63 : 
-       print(colours_array[9 : ])   
+       print(colours_array[9 : ]) 
+       solution_generator.fill_solve(colours_array[9 : ])
+
+   return colours_array[9 : ]    
+
 
 
 
@@ -96,8 +117,10 @@ def sort_array(TA) :
 
 tile_coordinates = []
 face_counter = 0
+text_shower = False
 
 while True : 
+
     success, img_org = cap.read()
 
     gray = cv2.cvtColor(img_org, cv2.COLOR_BGR2GRAY)
@@ -184,7 +207,12 @@ while True :
 
                                  if face_counter % 15 == 0 : 
                                       sort_array(tile_coordinates)
+                                      face_counter = 0
+                                      #text_shower = True
+                                      
+                                     
 
+                                      
                                  tile_coordinates = []
                                  
 
@@ -202,7 +230,16 @@ while True :
                                   
                               
                         
+    #if text_shower and c < 5 : 
+        #cv2.putText(img_org , 'Show next face' , (20 , 20) , cv2.FONT_HERSHEY_SIMPLEX , 1 , (0 , 0 , 255) , 2 , cv2.LINE_AA)
+        #c += 1
+    #else : 
+        #text_shower , c = False , 0
 
+
+    
+    cv2.rectangle(img_org , (20 , 330) , (180 , 370) , (0 , 0 , 0) , -1)
+    cv2.rectangle(img_org , (60 , 290) , (100 , 410) , (0 , 0 , 0) , -1)
     cv2.imshow('Screen' , img_org)
 
 
