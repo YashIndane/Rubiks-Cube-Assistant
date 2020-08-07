@@ -15,7 +15,7 @@ s_scalar = joblib.load('Scalar1')
 model = joblib.load('model_0.04')
 
 colours_array = ['0' , '0' , '0' , '0' , '0' , '0' , '0' , '0' , '0']
-colour_pallet = [(0,165,255) , (0,0,255) , (0,255,0) , (255,0,0) , (0,255,255) , (255,255,255)]
+colour_pallet = {'orange':(0,165,255) , 'red':(0,0,255) , 'green':(0,255,0) , 'blue':(255,0,0) , 'yellow':(0,255,255) , 'white':(255,255,255)}
 
 def check_if_square(P1 , P2) -> bool : 
    
@@ -39,13 +39,10 @@ def sort_array(TA) :
    Z3.sort()
    
    
-
    i = 0
    print(Z1 + Z2 + Z3)
    
-   _x_ , _y_ = (30 , 30)
    temp_array = []
-   w = 0
    
    for  x , y in Z1 + Z2 + Z3 : 
 
@@ -63,61 +60,36 @@ def sort_array(TA) :
       index = value[0] - 1
 
       temp_array.append(colours[index])
-      
-      if w not in [3 , 6] : 
-        cv2.rectangle(img_org , (_x_ , _y_) , (_x_ + 13 , _y_ + 13) , colour_pallet[index] , -1)
-        _x_ += 13
-      else : 
-          _y_ += 13
-          _x_ = 30
-          cv2.rectangle(img_org , (_x_ , _y_) , (_x_ + 13 , _y_ + 13) , colour_pallet[index] , -1)
-          _x_ += 13
-
-
-      
-      w += 1
+   
       i += 1
 
+   
+     
    sub_array = colours_array[len(colours_array) - 9 : ]  
-
+  
    not_same = 0
    for h in range(9) : 
        if sub_array[h] != temp_array[h] : not_same += 1
 
    if not_same >= 4 : 
        colours_array += temp_array
-       #time.sleep(0.4)
+       
       
-
    if len(colours_array) ==  63 : 
        print(colours_array[9 : ]) 
        solution_generator.fill_solve(colours_array[9 : ])
 
+   try : colours_array[58] = 'white'
+   except : pass
+
    return colours_array[9 : ]    
 
-
-
-
-
-      
-
-
-     
-
-  
-
-
-      
-
-
-
-
-
-
+    
 
 tile_coordinates = []
 face_counter = 0
 text_shower = False
+font = cv2.FONT_HERSHEY_COMPLEX 
 
 while True : 
 
@@ -133,25 +105,11 @@ while True :
     (contours, hierarchy) = cv2.findContours(dilated.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
 
-
-
-
-    
-    
-    font = cv2.FONT_HERSHEY_COMPLEX 
-    
-    
-    
-
-
     for cnt in contours : 
 
          area = cv2.contourArea(cnt) 
-        
-         
-    
-            # Capturing grid squares by area 
-         if area < 3500 and area > 1500 :  
+       
+         if area < 3500 and area > 1500 : # Capturing grid squares by area  
                
                 approx = cv2.approxPolyDP(cnt,   0.03 * cv2.arcLength(cnt, True), True) 
                 coordinates = []
@@ -173,7 +131,6 @@ while True :
                       coordinates = sorted(coordinates , key = lambda x : x[0])
 
                      
-
                       P1 = coordinates[:2]
                       P2 = coordinates[2:]
 
@@ -186,32 +143,18 @@ while True :
                         
 
                         if all([abs(P1[0][0] - x) > 20 or abs(P1[0][1] - y) > 20 for x , y in tile_coordinates]) :
-                              #cv2.drawContours(img_org, [approx], 0, (20, 255 , 57), 2) 
-
+                              
                               tile_coordinates.append(P1[0])
                               
-
-                              
-
                               if len(tile_coordinates) == 9 : 
 
                                  print(tile_coordinates)
-                                 
-                                 #tile_coordinates = []
-
-                                 #if cv2.waitKey(1) & 0xFF == ord('a') :
-
                                  face_counter += 1
                                 
-
-
                                  if face_counter % 15 == 0 : 
-                                      sort_array(tile_coordinates)
+                                      ca = sort_array(tile_coordinates)
                                       face_counter = 0
                                       #text_shower = True
-                                      
-                                     
-
                                       
                                  tile_coordinates = []
                                  
@@ -240,6 +183,33 @@ while True :
     
     cv2.rectangle(img_org , (20 , 330) , (180 , 370) , (0 , 0 , 0) , -1)
     cv2.rectangle(img_org , (60 , 290) , (100 , 410) , (0 , 0 , 0) , -1)
+
+    ranges = [(60 , 330) ,(100 , 330) ,(140 , 330) ,(20 , 330) ,(60 , 290) ,(60 , 370)]
+    lo , la = 0 , 9
+
+    try : 
+      for i in range (int(len(ca) / 9)) : 
+        
+        nine_chunk = ca[lo : la]
+        _x_ , _y_ = ranges[i]
+        c_x = _x_
+
+        
+        for w , c_ in enumerate(nine_chunk) : 
+
+               if w not in [3 , 6] : 
+                 cv2.rectangle(img_org , (_x_ , _y_) , (_x_ + 13 , _y_ + 13) , colour_pallet[c_] , -1)
+                 _x_ += 13
+               else : 
+                 _y_ += 13
+                 _x_ = c_x
+                 cv2.rectangle(img_org , (_x_ , _y_) , (_x_ + 13 , _y_ + 13) , colour_pallet[c_] , -1)
+                 _x_ += 13
+     
+        lo += 9
+        la += 9  
+    except : pass          
+
     cv2.imshow('Screen' , img_org)
 
 
