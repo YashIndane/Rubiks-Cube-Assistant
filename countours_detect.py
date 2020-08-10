@@ -4,6 +4,7 @@ import math
 import joblib
 import time
 import solution_generator
+import pyttsx3
 
 
 
@@ -21,11 +22,39 @@ def check_if_square(P1 , P2) -> bool :
    
    d1 = math.dist(P1[0] , P2[1])
    d2 = math.dist(P1[1] , P2[0])
-
    return abs(d1 - d2)  < 2
 
+def sketch_cube(ca) : 
 
-def sort_array(TA) : 
+    ranges = [(60 , 330) ,(100 , 330) ,(140 , 330) ,(20 , 330) ,(60 , 290) ,(60 , 370)]
+    lo , la = 0 , 9
+
+     
+    for i in range (int(len(ca) / 9)) : 
+        
+        nine_chunk = ca[lo : la]
+        _x_ , _y_ = ranges[i]
+        c_x = _x_
+
+        
+        for w , c_ in enumerate(nine_chunk) : 
+
+               if w not in [3 , 6] : 
+                 cv2.rectangle(img_org , (_x_ , _y_) , (_x_ + 13 , _y_ + 13) , colour_pallet[c_] , -1)
+                 _x_ += 13
+               else : 
+                 _y_ += 13
+                 _x_ = c_x
+                 cv2.rectangle(img_org , (_x_ , _y_) , (_x_ + 13 , _y_ + 13) , colour_pallet[c_] , -1)
+                 _x_ += 13
+     
+        lo += 9
+        la += 9  
+     
+
+
+
+def sort_array(TA) -> list : 
 
    global colours_array
 
@@ -38,16 +67,12 @@ def sort_array(TA) :
    Z3 = TA[6 : 9]
    Z3.sort()
    
-   
-   i = 0
-   print(Z1 + Z2 + Z3)
-   
    temp_array = []
    
    for  x , y in Z1 + Z2 + Z3 : 
 
       img = img_org[y + 10 : y + 35 , x + 10 : x + 35]
-      cv2.imwrite(str(i) + '.png' , img)
+      
       
       arr = []
       for p in img[12][12] : arr.append(p)
@@ -61,10 +86,7 @@ def sort_array(TA) :
 
       temp_array.append(colours[index])
    
-      i += 1
-
-   
-     
+      
    sub_array = colours_array[len(colours_array) - 9 : ]  
   
    not_same = 0
@@ -76,16 +98,22 @@ def sort_array(TA) :
        
       
    if len(colours_array) ==  63 : 
-       print(colours_array[9 : ]) 
+      
+       colours_array[58] = 'white'
+       sketch_cube(colours_array[9 : ])
+       cv2.imshow('Screen' , img_org)
+
+        
        solution_generator.fill_solve(colours_array[9 : ])
 
    try : colours_array[58] = 'white'
    except : pass
+   
+   return colours_array[9 : ]   
+  
 
-   return colours_array[9 : ]    
 
-    
-
+cs , c = 0 , 0
 tile_coordinates = []
 face_counter = 0
 text_shower = False
@@ -103,7 +131,8 @@ while True :
     dilated = cv2.dilate(canny, kernel, iterations = 0)
 
     (contours, hierarchy) = cv2.findContours(dilated.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-
+    
+    
 
     for cnt in contours : 
 
@@ -148,77 +177,40 @@ while True :
                               
                               if len(tile_coordinates) == 9 : 
 
-                                 print(tile_coordinates)
+                                 
                                  face_counter += 1
                                 
-                                 if face_counter % 15 == 0 : 
+                                 if face_counter % 15 == 0 :
+
+                                      cs += 1 
                                       ca = sort_array(tile_coordinates)
                                       face_counter = 0
-                                      #text_shower = True
+                                      text_shower = True
+                                      c = 0
                                       
                                  tile_coordinates = []
                                  
 
                                  
-                               
-                                 
-                                 
-                                 
-
-        
-                                     
-
-
-                                 
-                                  
-                              
-                        
-    #if text_shower and c < 5 : 
-        #cv2.putText(img_org , 'Show next face' , (20 , 20) , cv2.FONT_HERSHEY_SIMPLEX , 1 , (0 , 0 , 255) , 2 , cv2.LINE_AA)
-        #c += 1
-    #else : 
-        #text_shower , c = False , 0
-
-
-    
     cv2.rectangle(img_org , (20 , 330) , (180 , 370) , (0 , 0 , 0) , -1)
     cv2.rectangle(img_org , (60 , 290) , (100 , 410) , (0 , 0 , 0) , -1)
 
-    ranges = [(60 , 330) ,(100 , 330) ,(140 , 330) ,(20 , 330) ,(60 , 290) ,(60 , 370)]
-    lo , la = 0 , 9
+    try : sketch_cube(ca) 
+    except : pass  
 
-    try : 
-      for i in range (int(len(ca) / 9)) : 
-        
-        nine_chunk = ca[lo : la]
-        _x_ , _y_ = ranges[i]
-        c_x = _x_
+    if all([text_shower , c < 5 , cs < 6]) : 
+        cv2.putText(img_org , 'Show next face' , (20 , 40) , cv2.FONT_HERSHEY_SIMPLEX , 1 , (0 , 0 , 255) , 2 , cv2.LINE_AA)
+        c += 1
+    else : 
+        text_shower , c = False , 0
 
-        
-        for w , c_ in enumerate(nine_chunk) : 
-
-               if w not in [3 , 6] : 
-                 cv2.rectangle(img_org , (_x_ , _y_) , (_x_ + 13 , _y_ + 13) , colour_pallet[c_] , -1)
-                 _x_ += 13
-               else : 
-                 _y_ += 13
-                 _x_ = c_x
-                 cv2.rectangle(img_org , (_x_ , _y_) , (_x_ + 13 , _y_ + 13) , colour_pallet[c_] , -1)
-                 _x_ += 13
-     
-        lo += 9
-        la += 9  
-    except : pass          
-
+    if cs == 6 : cv2.putText(img_org , 'CUBE SOLVED!' , (20 , 40) , cv2.FONT_HERSHEY_SIMPLEX , 1 , (0 , 0 , 255) , 2 , cv2.LINE_AA)
     cv2.imshow('Screen' , img_org)
 
-
-
+   
     if cv2.waitKey(1) & 0xFF == ord('q') :
             break
     
    
 
 
-
-                
