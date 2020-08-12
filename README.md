@@ -12,6 +12,8 @@ A assistant to help you solve a standard Rubik's cube
 
 2. The 9 colours on each face of cube is grabbed after filtering the countours by area and shape.
 
+![](Machine Learning/Images/sample_image1.png)
+
 3. After the colours are grabbed , the middle pixel in them is used to predict the colour of whole ROI. This predicted colour values are stored in an array serially for further solving the cube.
 
 ### Solving the cube
