@@ -2,9 +2,7 @@ import cv2
 import numpy as np
 import math
 import joblib
-import time
 import solution_generator
-import pyttsx3
 
 
 
@@ -53,18 +51,15 @@ def sketch_cube(ca) :
      
 
 
-
 def sort_array(TA) -> list : 
 
    global colours_array
 
    TA = sorted(TA ,  key = lambda x : x[1])
 
-   Z1 = TA[0 : 3]
+   Z1 , Z2 , Z3 = TA[0 : 3] , TA[3 : 6] , TA[6 : 9]
    Z1.sort()
-   Z2 = TA[3 : 6]
    Z2.sort()
-   Z3 = TA[6 : 9]
    Z3.sort()
    
    temp_array = []
@@ -73,8 +68,8 @@ def sort_array(TA) -> list :
 
       img = img_org[y + 10 : y + 35 , x + 10 : x + 35]
       
-      
       arr = []
+
       for p in img[12][12] : arr.append(p)
 
       n_array = np.array([arr])
@@ -93,8 +88,7 @@ def sort_array(TA) -> list :
    for h in range(9) : 
        if sub_array[h] != temp_array[h] : not_same += 1
 
-   if not_same >= 4 : 
-       colours_array += temp_array
+   if not_same >= 4 : colours_array += temp_array
        
       
    if len(colours_array) ==  63 : 
@@ -103,7 +97,6 @@ def sort_array(TA) -> list :
        sketch_cube(colours_array[9 : ])
        cv2.imshow('Screen' , img_org)
 
-        
        solution_generator.fill_solve(colours_array[9 : ])
 
    try : colours_array[58] = 'white'
@@ -133,7 +126,6 @@ while True :
     (contours, hierarchy) = cv2.findContours(dilated.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     
     
-
     for cnt in contours : 
 
          area = cv2.contourArea(cnt) 
@@ -177,7 +169,6 @@ while True :
                               
                               if len(tile_coordinates) == 9 : 
 
-                                 
                                  face_counter += 1
                                 
                                  if face_counter % 15 == 0 :
@@ -214,3 +205,5 @@ while True :
    
 
 
+
+                
