@@ -19,13 +19,18 @@ def fill_solve(CA) :
     chrome_opt.add_argument('--headless')
 
 
-    driver = webdriver.Chrome('YOUR PATH FOR YOUR CHROME-DRIVER', chrome_options = chrome_opt)
+    driver = webdriver.Chrome('D:\Yash_Doc_Dell19\cdriver\chromedriver85.exe' , chrome_options = chrome_opt)
     driver.maximize_window()
 
     driver.get('https://ruwix.com/online-rubiks-cube-solver-program/')
+    
+    try :
+       ad_button = driver.find_element_by_xpath('/html/body/div[6]/div/button')
+       ad_button.click()
+    except : pass   
 
 
-    button_view = driver.find_element_by_xpath('/html/body/div[3]/div/div[3]/div[3]/section/article/section/div[1]/div[2]/div[1]/div[1]/div[3]/div')
+    button_view = driver.find_element_by_xpath('/html/body/div[2]/div/div[3]/div[3]/section/article/section/div[1]/div[2]/div[1]/div[1]/div[3]/div')
     button_view.click()
     
     try : 
@@ -47,10 +52,10 @@ def fill_solve(CA) :
           colour_filling_button.click()
 
 
-    button_solve = driver.find_element_by_xpath('/html/body/div[3]/div/div[3]/div[3]/section/article/section/div[1]/div[2]/div[2]/div[1]/div[2]/div[1]/div[3]/a/div')
+    button_solve = driver.find_element_by_xpath('/html/body/div[2]/div/div[3]/div[3]/section/article/section/div[1]/div[2]/div[2]/div[1]/div[2]/div[1]/div[3]/a/div')
     button_solve.click()
 
-    solved_url = driver.find_element_by_xpath('/html/body/div[3]/div/div[3]/div[3]/section/article/section/div[1]/div[2]/div[2]/div[1]/div[2]/div[1]/div[3]/a')
+    solved_url = driver.find_element_by_xpath('/html/body/div[2]/div/div[3]/div[3]/section/article/section/div[1]/div[2]/div[2]/div[1]/div[2]/div[1]/div[3]/a')
     u = solved_url.get_attribute('href')
 
     alltabs = driver.window_handles
@@ -66,7 +71,7 @@ def fill_solve(CA) :
               
               try : 
                 move = driver.find_element_by_xpath(m_x)
-                print(move.text)
+                #print(move.text)
 
                 command_ = speaking_cmds[move.text]
                 speak_move(command_)
