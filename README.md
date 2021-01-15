@@ -18,6 +18,8 @@ A assistant to help you solve a standard Rubik's cube
 
 ### Solving the cube
 
+To see demo click here -> ![demo](https://www.linkedin.com/posts/yash-indane-aa6534179_python3-machinelearning-opencv-activity-6700111067638468608-nDUc)
+
 The instructions for solving the cube have been webscrapped from https://ruwix.com/online-rubiks-cube-solver-program/
 
 Installation
