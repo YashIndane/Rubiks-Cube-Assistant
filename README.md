@@ -31,5 +31,5 @@ For doing headless scrapping -
 ```py
 chrome_opt = webdriver.ChromeOptions()
 chrome_opt.add_argument('--headless')
-driver = webdriver.Chrome(path for chromedriver , chrome_options = chrome_opt)
+driver = webdriver.Chrome("<CHROME-DRIVER-PATH>" , chrome_options=chrome_opt)
 ```
