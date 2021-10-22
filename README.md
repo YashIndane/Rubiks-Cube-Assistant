@@ -24,7 +24,7 @@ The instructions for solving the cube have been webscrapped from https://ruwix.c
 
 Installation
 
-`pip install selenium`
+`$ pip install selenium`
 
 For doing headless scrapping - 
 
