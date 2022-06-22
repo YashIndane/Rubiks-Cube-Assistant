@@ -1,5 +1,5 @@
 opencv-python==4.4.0.44
-numpy==1.19.2
+numpy==1.22.0
 joblib==0.17.0
 selenium==3.141.0
 pyttsx3==2.90
